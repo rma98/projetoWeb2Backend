@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -58,17 +59,17 @@ public class UsuarioController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
-            // Verifica se o usuário existe e se a senha está correta
             Usuario usuario = usuarioService.login(loginRequest.getEmail(), loginRequest.getSenha());
             if (usuario == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("Credenciais inválidas"));
             }
-            return ResponseEntity.ok("Login realizado com sucesso.");
+
+            // Retorna um objeto JSON ao invés de uma string simples
+            return ResponseEntity.ok(Map.of("message", "Login realizado com sucesso", "usuario", usuario.getEmail()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("Erro no login: " + e.getMessage()));
         }
     }
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarPorId(@PathVariable Long id) {

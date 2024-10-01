@@ -1,6 +1,9 @@
 package br.edu.ifpe.gerenciadorSalas.config;
 
-/*import br.edu.ifpe.gerenciadorSalas.service.CustomUserDetailsService;
+/*import br.edu.ifpe.gerenciadorSalas.security.JwtAuthenticationFilter;
+import br.edu.ifpe.gerenciadorSalas.service.CustomUserDetailsService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,31 +11,41 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final CustomUserDetailsService customUserDetailsService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private CustomUserDetailsService customUserDetailsService;
+    public WebSecurityConfig(CustomUserDetailsService customUserDetailsService,
+                             JwtAuthenticationFilter jwtAuthenticationFilter,
+                             PasswordEncoder passwordEncoder) {
+        this.customUserDetailsService = customUserDetailsService;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors() // Adiciona suporte a CORS
+            .cors()
             .and()
+            .csrf().disable() // Desabilita CSRF
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/api/usuarios").permitAll() // Permite acesso ao registro
-                .requestMatchers("/api/login").permitAll() // Permite acesso ao login
-                .anyRequest().authenticated() // Exige autenticação para qualquer outro endpoint
+                .requestMatchers("/api/usuarios", "/api/login").permitAll() // Acessos liberados
+                .anyRequest().authenticated() // Todas as outras rotas exigem autenticação
             )
-            .csrf().disable() // Desabilita CSRF (não recomendado em produção)
-            .formLogin(); // Habilita o formulário de login padrão do Spring Security
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // JWT não utiliza sessão
+            .and()
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // Adiciona o filtro JWT
+
         return http.build();
     }
 
@@ -41,9 +54,8 @@ public class WebSecurityConfig {
         AuthenticationManagerBuilder authenticationManagerBuilder =
                 http.getSharedObject(AuthenticationManagerBuilder.class);
         authenticationManagerBuilder
-                .userDetailsService(customUserDetailsService)
-                .passwordEncoder(passwordEncoder);
+            .userDetailsService(customUserDetailsService)
+            .passwordEncoder(passwordEncoder);
         return authenticationManagerBuilder.build();
     }
-}
-*/
+}*/
