@@ -1,5 +1,6 @@
 package br.edu.ifpe.gerenciadorSalas.service;
 
+import br.edu.ifpe.gerenciadorSalas.dto.UsuarioDTO;
 import br.edu.ifpe.gerenciadorSalas.model.Usuario;
 import br.edu.ifpe.gerenciadorSalas.repository.UsuarioRepository;
 import org.slf4j.Logger;
@@ -103,5 +104,10 @@ public class UsuarioService {
         Usuario usuario = buscarPorId(id);
         logger.info("Deletando usuário com ID: " + id + " e email: " + usuario.getEmail());
         usuarioRepository.deleteById(id);
+    }
+
+    // Conversão de Usuario para UsuarioDTO
+    public UsuarioDTO toDTO(Usuario usuario) {
+        return new UsuarioDTO(usuario.getNome(), usuario.getTipo());
     }
 }
