@@ -1,5 +1,6 @@
 package br.edu.ifpe.gerenciadorSalas.controller;
 
+import br.edu.ifpe.gerenciadorSalas.dto.UsuarioDTO;
 import br.edu.ifpe.gerenciadorSalas.exception.ErrorResponse;
 import br.edu.ifpe.gerenciadorSalas.model.LoginRequest;
 import br.edu.ifpe.gerenciadorSalas.model.Usuario;
@@ -64,8 +65,13 @@ public class UsuarioController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("Credenciais inválidas"));
             }
 
-            // Retorna um objeto JSON ao invés de uma string simples
-            return ResponseEntity.ok(Map.of("message", "Login realizado com sucesso", "usuario", usuario.getEmail()));
+            // Usando o DTO para retornar apenas informações seguras
+            UsuarioDTO usuarioDTO = usuarioService.toDTO(usuario);
+
+            return ResponseEntity.ok(Map.of(
+                "message", "Login realizado com sucesso",
+                "usuario", usuarioDTO // Enviando as informações do usuário através do DTO
+            ));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("Erro no login: " + e.getMessage()));
         }
