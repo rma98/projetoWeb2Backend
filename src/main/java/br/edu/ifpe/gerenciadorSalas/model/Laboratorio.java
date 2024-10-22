@@ -15,6 +15,8 @@ public class Laboratorio {
     private String nome;
 
     private String descricao;
+    
+    private int capacidade;
 
     @Enumerated(EnumType.STRING)
     private StatusLaboratorio status;
