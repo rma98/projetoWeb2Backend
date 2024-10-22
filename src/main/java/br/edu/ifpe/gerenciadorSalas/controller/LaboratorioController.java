@@ -41,6 +41,18 @@ public class LaboratorioController {
         Laboratorio novoLaboratorio = laboratorioService.salvar(laboratorio);
         return ResponseEntity.status(HttpStatus.CREATED).body(novoLaboratorio);
     }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<Laboratorio> atualizar(@PathVariable Long id, @RequestBody Laboratorio laboratorioAtualizado) {
+        Optional<Laboratorio> laboratorioExistente = laboratorioService.buscarPorId(id);
+        if (!laboratorioExistente.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        laboratorioAtualizado.setId(id); // Defina o ID do laboratório atualizado
+        Laboratorio laboratorioSalvo = laboratorioService.salvar(laboratorioAtualizado);
+        return ResponseEntity.ok(laboratorioSalvo);
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarPorId(@PathVariable Long id) {
