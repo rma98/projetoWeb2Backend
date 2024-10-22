@@ -15,6 +15,8 @@ public class Sala {
     private String nome;
 
     private String descricao;
+    
+    private int capacidade;
 
     @Enumerated(EnumType.STRING)
     private StatusSala status;
