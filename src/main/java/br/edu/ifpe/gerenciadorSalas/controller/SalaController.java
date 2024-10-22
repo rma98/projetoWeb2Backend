@@ -41,6 +41,18 @@ public class SalaController {
         Sala novaSala = salaService.salvar(sala);
         return ResponseEntity.status(HttpStatus.CREATED).body(novaSala);
     }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<Sala> atualizar(@PathVariable Long id, @RequestBody Sala salaAtualizada) {
+        Optional<Sala> salaExistente = salaService.buscarPorId(id);
+        if (!salaExistente.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        salaAtualizada.setId(id); // Define o ID da sala atualizada
+        Sala salaSalva = salaService.salvar(salaAtualizada);
+        return ResponseEntity.ok(salaSalva);
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarPorId(@PathVariable Long id) {
