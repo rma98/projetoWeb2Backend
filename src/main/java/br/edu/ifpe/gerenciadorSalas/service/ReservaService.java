@@ -5,8 +5,8 @@ import br.edu.ifpe.gerenciadorSalas.repository.ReservaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ReservaService {
@@ -14,27 +14,22 @@ public class ReservaService {
     @Autowired
     private ReservaRepository reservaRepository;
 
-    public List<Reserva> listarTodos() {
-        return reservaRepository.findAll();
+    public boolean existeConflito(Reserva novaReserva) {
+        // Busca reservas que tenham sobreposição de horário para a mesma sala ou laboratório
+        List<Reserva> reservasConflitantes = reservaRepository
+                .findBySalaOrLaboratorioAndDataInicioBeforeAndDataFimAfter(
+                        novaReserva.getSala(),
+                        novaReserva.getLaboratorio(),
+                        novaReserva.getDataFim(),
+                        novaReserva.getDataInicio()
+                );
+        return !reservasConflitantes.isEmpty();
     }
 
-    public Optional<Reserva> buscarPorId(Long id) {
-        return reservaRepository.findById(id);
-    }
-
-    public List<Reserva> listarPorSalaId(Long salaId) {
-        return reservaRepository.findBySalaId(salaId);
-    }
-
-    public List<Reserva> listarPorLaboratorioId(Long laboratorioId) {
-        return reservaRepository.findByLaboratorioId(laboratorioId);
-    }
-
-    public Reserva salvar(Reserva reserva) {
-        return reservaRepository.save(reserva);
-    }
-
-    public void deletarPorId(Long id) {
-        reservaRepository.deleteById(id);
+    public Reserva criarReserva(Reserva novaReserva) {
+        if (existeConflito(novaReserva)) {
+            throw new IllegalArgumentException("Conflito de horário: esta sala ou laboratório já está reservado.");
+        }
+        return reservaRepository.save(novaReserva);
     }
 }
