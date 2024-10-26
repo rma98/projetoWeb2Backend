@@ -12,12 +12,14 @@ public class Reserva {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private LocalDateTime dataInicio;
 
+    @Column(nullable = false)
     private LocalDateTime dataFim;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id")
+    @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
     @ManyToOne
@@ -30,5 +32,5 @@ public class Reserva {
 
     @ManyToOne
     @JoinColumn(name = "recurso_id", nullable = true)
-    private Recurso recurso;
+    private Recurso recursoAdicional;
 }
